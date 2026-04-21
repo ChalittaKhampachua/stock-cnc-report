@@ -1,0 +1,25 @@
+{
+    "servers": {
+        "serena": {
+            "type": "stdio",
+            "command": "/Users/imint/.local/bin/serena",
+            "args": [
+                "start-mcp-server",
+                "--context=vscode",
+                "--project",
+                "${workspaceFolder}"
+            ]
+        },
+        "sequential-thinking": {
+            "type": "stdio",
+            "command": "npx",
+            "args": [
+                "-y",
+                "@modelcontextprotocol/server-sequential-thinking"
+            ]
+        },
+        "context7": {
+            "url": "https://mcp.context7.com/mcp"
+        }
+    }
+}

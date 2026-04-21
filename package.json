@@ -1,0 +1,22 @@
+{
+  "name": "storytelling",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "dotenv": "^17.4.2",
+    "node-fetch": "^3.3.2",
+    "openai": "^6.34.0",
+    "rss-parser": "^3.13.0",
+    "technicalindicators": "^3.1.0",
+    "yahoo-finance2": "^3.14.0"
+  }
+}

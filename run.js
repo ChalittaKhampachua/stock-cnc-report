@@ -20,6 +20,7 @@ const WATCHLIST = [
     "KTB.BK",
     "THCOM.BK",
     "TTB.BK",
+    "SCB.BK",
 ]
 
 async function sendTelegram(text) {
@@ -47,12 +48,18 @@ function escapeHtml(text) {
 }
 
 function formatMessage(stockInfo) {
-    const { symbol, price, zone, label, cdcScore, ema12, ema26 } = stockInfo
+    const { symbol, price, zone, label, cdcScore, ema12, ema26, change, changePct, high52w, low52w } = stockInfo
+
+    const changeSign = change >= 0 ? "+" : ""
+    const changeStr = `${changeSign}${change?.toFixed(2)} THB (${changeSign}${changePct?.toFixed(2)}%)`
 
     let msg = `<b>━━━ ${escapeHtml(symbol)} ━━━</b>\n`
     msg += `💰 ราคา: <b>${price?.toFixed(2)} บาท</b>\n`
+    msg += `📉 Change Today: ${escapeHtml(changeStr)}\n`
     msg += `📊 CDC: ${escapeHtml(label)} [${cdcScore > 0 ? "+" : ""}${cdcScore}]\n`
     msg += `📈 EMA12: ${ema12?.toFixed(2)} | EMA26: ${ema26?.toFixed(2)}\n`
+    if (high52w != null) msg += `🔝 52-Week High: ${high52w?.toFixed(2)} THB\n`
+    if (low52w != null) msg += `🔻 52-Week Low: ${low52w?.toFixed(2)} THB\n`
 
     return msg
 }
@@ -75,24 +82,15 @@ async function processSymbol(symbol) {
 async function run() {
     console.log(`[run] Starting analysis for ${WATCHLIST.length} stocks...`)
     const dateStr = new Date().toLocaleDateString("th-TH", { dateStyle: "medium" })
-    const header = `📊 <b>รายงานหุ้น</b> — ${dateStr}\n\n`
+    const header = `🗓️ <b>รายงานหุ้น</b> — ${dateStr}\n\n`
+    const divider = "━━━━━━━━━━━━\n"
 
     const results = []
     for (const symbol of WATCHLIST) {
         results.push(await processSymbol(symbol))
     }
 
-    // Summary message
-    const summaryLines = [`📋 <b>สรุปภาพรวม CDC</b> — ${dateStr}\n`]
-    for (const { stockInfo } of results) {
-        if (!stockInfo) continue
-        const { symbol, price, label, cdcScore } = stockInfo
-        const sign = cdcScore > 0 ? "+" : ""
-        summaryLines.push(`${escapeHtml(symbol.replace(".BK", ""))} — ${price?.toFixed(2)} บาท | ${escapeHtml(label)} [${sign}${cdcScore}]`)
-    }
-    await sendTelegram(summaryLines.join("\n"))
-
-    const fullMessage = header + results.map((r) => r.msg).join("\n")
+    const fullMessage = header + results.map((r) => r.msg).join("\n") + "\n" + divider
     await sendTelegram(fullMessage)
     console.log(fullMessage)
     console.log("[run] Done! Telegram sent.")

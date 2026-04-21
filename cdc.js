@@ -51,14 +51,23 @@ export function getCDCZone(price, ema12, ema26) {
 }
 
 export async function analyzeStock(symbol) {
-    const closes = await fetchCloses(symbol, 60)
+    const [closes, quote] = await Promise.all([
+        fetchCloses(symbol, 60),
+        yahooFinance.quote(symbol),
+    ])
+
     if (closes.length < 26) {
         throw new Error(`Not enough data for ${symbol}: got ${closes.length} candles`)
     }
 
-    const price = closes.at(-1)
+    const price = quote?.regularMarketPrice ?? closes.at(-1)
     const { ema12, ema26 } = calcEMA(closes)
     const { zone, label, cdcScore } = getCDCZone(price, ema12, ema26)
 
-    return { symbol, price, ema12, ema26, zone, label, cdcScore }
+    const change = quote?.regularMarketChange ?? 0
+    const changePct = quote?.regularMarketChangePercent ?? 0
+    const high52w = quote?.fiftyTwoWeekHigh ?? null
+    const low52w = quote?.fiftyTwoWeekLow ?? null
+
+    return { symbol, price, ema12, ema26, zone, label, cdcScore, change, changePct, high52w, low52w }
 }

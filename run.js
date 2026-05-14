@@ -1,27 +1,12 @@
 import "dotenv/config"
 import fetch from "node-fetch"
 import { analyzeStock } from "./cdc.js"
+import { WATCHLIST } from "./watchlist.js"
 // import { fetchAllNews } from "./news.js"
 // import { analyzeNews } from "./analyze.js"
 
 const TOKEN = process.env.TELEGRAM_TOKEN
 const CHAT_ID = process.env.TELEGRAM_CHAT_ID
-
-const WATCHLIST = [
-    "ADVANC.BK",
-    "BANPU.BK",
-    "BGRIM.BK",
-    "DIF.BK",
-    "GULF.BK",
-    "INETREIT.BK",
-    "INSET.BK",
-    "KBANK.BK",
-    "KKP.BK",
-    "KTB.BK",
-    "THCOM.BK",
-    "TTB.BK",
-    "SCB.BK",
-]
 
 async function sendTelegram(text) {
     // Telegram limit: 4096 chars per message — split if needed
